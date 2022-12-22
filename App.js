@@ -9,6 +9,7 @@
 import React from 'react';
 import type {Node} from 'react';
 import {
+  Button,
   Image,
   SafeAreaView,
   ScrollView,
@@ -23,9 +24,37 @@ import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen';
 
+import DocumentPicker, {
+  DirectoryPickerResponse,
+  DocumentPickerResponse,
+  isInProgress,
+  types,
+} from 'react-native-document-picker'
+
+import { useEffect } from 'react'
+
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const Section = ({children, title}): Node => {
+  const [result, setResult] = React.useState<
+    Array<DocumentPickerResponse> | DirectoryPickerResponse | undefined | null
+  >()
+
+  useEffect(() => {
+    console.log(JSON.stringify(result, null, 2))
+  }, [result])
+
+  const handleError = (err: unknown) => {
+    if (DocumentPicker.isCancel(err)) {
+      console.warn('cancelled')
+      // User cancelled the picker, exit any dialogs or menus and move on
+    } else if (isInProgress(err)) {
+      console.warn('multiple pickers were opened, only the last will be considered')
+    } else {
+      throw err
+    }
+  }
+
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -72,7 +101,23 @@ const App: () => Node = () => {
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
           <Section title="Scene">
-          <Image source={{uri: 'https://placekitten.com/g/200/300'}}/>
+            <Image source={{uri: 'https://placekitten.com/g/200/300'}}/>
+          </Section>
+          <Section>
+            <Button
+              title="Choose file"
+              onPress={async () => {
+                try {
+                  const pickerResult = await DocumentPicker.pickSingle({
+                    presentationStyle: 'fullScreen',
+                    copyTo: 'cachesDirectory',
+                  })
+                  setResult([pickerResult])
+                } catch (e) {
+                  handleError(e)
+                }
+              }}
+            />
           </Section>
         </View>
       </ScrollView>
