@@ -23,38 +23,15 @@ import {
 import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen';
+import {SceneButton, SceneResponse} from './components';
 
-import DocumentPicker, {
-  DirectoryPickerResponse,
-  DocumentPickerResponse,
-  isInProgress,
-  types,
-} from 'react-native-document-picker'
+import * as ImagePicker from 'react-native-image-picker';
 
-import { useEffect } from 'react'
+const includeExtra = true;
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const Section = ({children, title}): Node => {
-  const [result, setResult] = React.useState<
-    Array<DocumentPickerResponse> | DirectoryPickerResponse | undefined | null
-  >()
-
-  useEffect(() => {
-    console.log(JSON.stringify(result, null, 2))
-  }, [result])
-
-  const handleError = (err: unknown) => {
-    if (DocumentPicker.isCancel(err)) {
-      console.warn('cancelled')
-      // User cancelled the picker, exit any dialogs or menus and move on
-    } else if (isInProgress(err)) {
-      console.warn('multiple pickers were opened, only the last will be considered')
-    } else {
-      throw err
-    }
-  }
-
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -81,6 +58,16 @@ const Section = ({children, title}): Node => {
 };
 
 const App: () => Node = () => {
+  const [response, setResponse] = React.useState<any>(null);
+
+  const onButtonPress = React.useCallback((type, options) => {
+    if (type === 'capture') {
+      ImagePicker.launchCamera(options, setResponse);
+    } else {
+      ImagePicker.launchImageLibrary(options, setResponse);
+    }
+  }, []);
+
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -93,33 +80,31 @@ const App: () => Node = () => {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Scene">
-            <Image source={{uri: 'https://placekitten.com/g/200/300'}}/>
-          </Section>
-          <Section>
-            <Button
-              title="Choose file"
-              onPress={async () => {
-                try {
-                  const pickerResult = await DocumentPicker.pickSingle({
-                    presentationStyle: 'fullScreen',
-                    copyTo: 'cachesDirectory',
-                  })
-                  setResult([pickerResult])
-                } catch (e) {
-                  handleError(e)
-                }
-              }}
-            />
-          </Section>
+      <ScrollView>
+        <View style={backgroundStyle}>
+          {actions.map(({title, type, options}) => {
+            return (
+              <SceneButton
+                key={title}
+                onPress={() => onButtonPress(type, options)}>
+                {title}
+              </SceneButton>
+            );
+          })}
         </View>
+        <SceneResponse>{response}</SceneResponse>
+
+        {response?.assets &&
+          response?.assets.map(({uri}: {uri: string}) => (
+            <View key={uri} style={styles.imageContainer}>
+              <Image
+                resizeMode="cover"
+                resizeMethod="scale"
+                style={styles.image}
+                source={{uri: uri}}
+              />
+            </View>
+          ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -139,9 +124,73 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '400',
   },
+  imageContainer: {
+    marginVertical: 24,
+    alignItems: 'center',
+  },
+  image: {
+    width: 200,
+    height: 200,
+  },
   highlight: {
     fontWeight: '700',
   },
 });
+
+interface Action {
+  title: string;
+  type: 'capture' | 'library';
+  options: ImagePicker.CameraOptions | ImagePicker.ImageLibraryOptions;
+}
+
+const actions: Action[] = [
+  {
+    title: 'Take Image',
+    type: 'capture',
+    options: {
+      saveToPhotos: true,
+      mediaType: 'photo',
+      includeBase64: false,
+      includeExtra,
+    },
+  },
+  {
+    title: 'Select Image',
+    type: 'library',
+    options: {
+      selectionLimit: 0,
+      mediaType: 'photo',
+      includeBase64: false,
+      includeExtra,
+    },
+  },
+  {
+    title: 'Take Video',
+    type: 'capture',
+    options: {
+      saveToPhotos: true,
+      mediaType: 'video',
+      includeExtra,
+    },
+  },
+  {
+    title: 'Select Video',
+    type: 'library',
+    options: {
+      selectionLimit: 0,
+      mediaType: 'video',
+      includeExtra,
+    },
+  },
+  {
+    title: `Select Image or Video\n(mixed)`,
+    type: 'library',
+    options: {
+      selectionLimit: 0,
+      mediaType: 'mixed',
+      includeExtra,
+    },
+  },
+];
 
 export default App;
