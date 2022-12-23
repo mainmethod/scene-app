@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     height: 200,
   },
   backgroundVideo: {
-    width: '100%',
+    width: '100%', // have to give it a width for it to show
     height: 200
   },
   highlight: {
