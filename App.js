@@ -26,6 +26,7 @@ import {
 import {SceneButton, SceneResponse} from './components';
 
 import * as ImagePicker from 'react-native-image-picker';
+import Video from 'react-native-video';
 
 const includeExtra = true;
 
@@ -105,6 +106,15 @@ const App: () => Node = () => {
               />
             </View>
           ))}
+        <View style={styles.imageContainer}>
+        <Video
+          source={{ uri: 'https://www.w3schools.com/html/mov_bbb.mp4' }}
+          style={styles.backgroundVideo}
+          controls={true}
+          ref={(ref) => {
+          this.player = ref
+          }} />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -131,6 +141,10 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
+  },
+  backgroundVideo: {
+    width: '100%',
+    height: 200
   },
   highlight: {
     fontWeight: '700',
