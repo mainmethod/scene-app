@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Text, StyleSheet, ViewStyle, TextStyle, ScrollView} from 'react-native';
+import {Text, StyleSheet, ScrollView} from 'react-native';
 
 export function SceneResponse({children}: React.PropsWithChildren<{}>) {
   if (children == null) {

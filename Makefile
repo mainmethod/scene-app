@@ -10,6 +10,9 @@ reset: ## reset watchman, blast node_modules, clean yarn cache
 	@rm -rf node_modules
 	@yarn cache clean
 
+lint:
+	@yarn lint
+
 start: ## start Metro
 	@yarn react-native start --reset-cache
 
