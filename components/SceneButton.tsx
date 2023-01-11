@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, Pressable} from 'react-native';
 
-export function SceneButton({onPress, children}: React.PropsWithChildren) {
+export function SceneButton({ onPress, children }) {
   return (
     <Pressable
       onPress={onPress}

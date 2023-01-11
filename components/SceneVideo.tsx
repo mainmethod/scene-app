@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import Video from 'react-native-video';
 
-export function SceneVideo({videoUri}: React.Props) {
+export function SceneVideo({ videoUri }) {
   return (
     <View style={styles.container}>
       <Video
