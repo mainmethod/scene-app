@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {StyleSheet, View} from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
 
-import {SceneButton} from '.';
+import { SceneButton } from '.';
 
 export function Actions({handleAssets}) {
   const onButtonPress = React.useCallback(

@@ -7,25 +7,13 @@
  */
 
 import React from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-  useColorScheme,
-} from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { SceneVideos, CreateSceneVideo } from './screens';
 
 const App = () => {
-
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
 
   const Stack = createNativeStackNavigator();
 
